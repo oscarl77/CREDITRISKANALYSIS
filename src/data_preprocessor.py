@@ -1,6 +1,7 @@
 import pandas as pd
 import os.path
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from sklearn.model_selection import train_test_split
 
 class DataPreprocessor():
 
@@ -18,7 +19,6 @@ class DataPreprocessor():
         if os.path.isfile(new_file_path):
             return
         encoded_dataset.to_csv(new_file_path, index=False)
-
 
     def _clean_dataset(self, raw_data):
         cleaned_dataset = self._remove_incomplete_rows(raw_data)
@@ -85,3 +85,13 @@ class DataPreprocessor():
         """
         lb_encoder = LabelEncoder()
         dataset[column_heading] = lb_encoder.fit_transform(dataset[[column_heading]])
+
+
+    def split_data(self, dataset, test_proportion):
+        # omit target variable from dataset
+        X = dataset.drop(['Status'], axis=1) 
+        # create training set without target variable
+        y = dataset['Status']
+        # split data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_proportion, random_state=42)
+        return X_train, X_test, y_train, y_test
